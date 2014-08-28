@@ -176,7 +176,7 @@ public class Homepage extends Activity {
                                     @Override
                                     public void done(List<ParseUser> parseUsers, ParseException e) {
                                         if(e == null) {
-
+                                            //TODO
                                         } else {
                                             Log.e("Parse", e.toString());
                                         }
@@ -266,8 +266,8 @@ public class Homepage extends Activity {
         // Set up the request
         ParseUser user = ParseUser.getCurrentUser();
         final ParseObject object = new ParseObject("Request");
-        object.put("idFrom", (String) user.getObjectId());
-        object.put("nameFrom", (String) user.getUsername());
+        object.put("idFrom", user.getObjectId());
+        object.put("nameFrom", user.getUsername());
 
         // Find the id of the friend the user is requesting
         ParseQuery<ParseUser> friendQuery = ParseUser.getQuery();
@@ -276,7 +276,7 @@ public class Homepage extends Activity {
             @Override
             public void done(List<ParseUser> parseUsers, ParseException e) {
                 if(e == null) {
-                    object.put("idTo", (String) parseUsers.get(0).getObjectId());
+                    object.put("idTo", parseUsers.get(0).getObjectId());
                     object.saveInBackground(new SaveCallback() {
                         @Override
                         public void done(ParseException e) {
@@ -341,7 +341,7 @@ public class Homepage extends Activity {
             }
         });*/
 
-        /*ParseQuery<ParseObject> query = ParseQuery.getQuery("testRequest");
+        ParseQuery<ParseObject> query = ParseQuery.getQuery("testRequest");
         query.findInBackground(new FindCallback<ParseObject>() {
             @Override
             public void done(List<ParseObject> parseObjects, ParseException e) {
@@ -349,7 +349,7 @@ public class Homepage extends Activity {
                     String requestId = parseObjects.get(0).getObjectId();
 
                     HashMap<String, Object> params = new HashMap<String, Object>();
-                    params.put("test", requestId);
+                    params.put("requestId", requestId);
                     ParseCloud.callFunctionInBackground("acceptRequest", params, new FunctionCallback<String>() {
                         @Override
                         public void done(String result, ParseException e) {
@@ -360,19 +360,6 @@ public class Homepage extends Activity {
                             }
                         }
                     });
-                }
-            }
-        });*/
-
-        HashMap<String, Object> params = new HashMap<String, Object>();
-        ParseCloud.callFunctionInBackground("hello", params, new FunctionCallback<String>() {
-            @Override
-            public void done(String result, ParseException e) {
-
-                if(e == null) {
-                    Log.v("Parse", result);
-                } else {
-                    Log.e("Parse", e.toString());
                 }
             }
         });
