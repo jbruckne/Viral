@@ -54,7 +54,7 @@ public class Homepage extends Activity {
     private void getRequests() {
         // Get all the friend requests for the user
         ParseQuery<ParseObject> requestQuery = ParseQuery.getQuery("Request");
-        requestQuery.whereEqualTo("idTo", ParseUser.getCurrentUser().getObjectId());
+        requestQuery.whereEqualTo("to", ParseUser.getCurrentUser().getObjectId());
         requestQuery.findInBackground(new FindCallback<ParseObject>() {
             @Override
             public void done(List<ParseObject> parseObjects, ParseException e) {
@@ -117,14 +117,15 @@ public class Homepage extends Activity {
             public void onClick(View v) {
                 int pos = ((PostsAdapter.ButtonInfo) v.getTag()).pos;
                 acceptRequest(pos);
-                deleteRequest(pos);
+                removeRequest(pos);
             }
         });
         adapter.setDeclineListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 int pos = ((PostsAdapter.ButtonInfo) v.getTag()).pos;
-                deleteRequest(pos);
+                declineRequest(pos);
+                removeRequest(pos);
             }
         });
         listView = (ListView) findViewById(R.id.recents);
@@ -135,22 +136,13 @@ public class Homepage extends Activity {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 ParseObject object = items.get(position);
-                if (object.getClassName().equals("Request")) {
-                    openRequest(object);
-                } else if (object.getClassName().equals("Post")) {
+                if (object.getClassName().equals("Post")) {
                     openPost(object);
                 } else {
                     Log.e("List", "ParseObject is neither Request or Post");
                 }
             }
         });
-    }
-
-    public void openRequest(ParseObject request) {
-        Intent intent = new Intent(getApplicationContext(), viewRequest.class);
-        intent.putExtra("CONTACT_NAME", request.getString("nameFrom"));
-        intent.putExtra("CONTACT_ID", request.getString("idFrom"));
-        startActivity(intent);
     }
 
     public void acceptRequest(int pos) {
@@ -197,7 +189,11 @@ public class Homepage extends Activity {
 
     }
 
-    public void deleteRequest(int pos) {
+    public void declineRequest(int pos) {
+        //TODO
+    }
+
+    public void removeRequest(int pos) {
         final int position = pos;
         ParseObject request = items.get(position);
         request.deleteInBackground(new DeleteCallback() {
@@ -327,19 +323,6 @@ public class Homepage extends Activity {
     }
 
     public void test() {
-        /*ParseObject friendRequest = new ParseObject("testRequest");
-        friendRequest.put("from", ParseUser.getCurrentUser());
-        friendRequest.put("to", "QeTlmFIobV");
-        friendRequest.saveInBackground(new SaveCallback() {
-            @Override
-            public void done(ParseException e) {
-                if(e == null) {
-                    Log.v("Parse", "Done saving");
-                } else {
-                    Log.e("Parse", e.toString());
-                }
-            }
-        });*/
 
         ParseQuery<ParseObject> query = ParseQuery.getQuery("testRequest");
         query.findInBackground(new FindCallback<ParseObject>() {
