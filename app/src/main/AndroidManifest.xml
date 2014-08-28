@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.joebruckner.viral" >
+
+    <!-- Permissions -->
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+
+    <!-- Features -->
+    <uses-feature
+        android:name="android.hardware.Camera"
+        android:required="true" />
+
+    <application
+        android:allowBackup="true"
+        android:icon="@drawable/ic_launcher"
+        android:label="@string/app_name"
+        android:theme="@style/AppTheme" >
+        <activity
+            android:name=".Homepage"
+            android:label="@string/app_name" >
+        </activity>
+        <activity
+            android:name=".Login"
+            android:label="@string/title_activity_login" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".SignUp"
+            android:label="@string/title_activity_sign_up"
+            android:noHistory="true"
+            android:parentActivityName=".Login" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.joebruckner.viral.Login" />
+        </activity>
+        <activity
+            android:name=".NewPost"
+            android:label="@string/title_activity_new_post"
+            android:parentActivityName=".Homepage" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.joebruckner.viral.Homepage" />
+        </activity>
+        <activity
+            android:name=".viewPost"
+            android:label="@string/title_activity_view_post" >
+        </activity>
+        <activity
+            android:name=".viewRequest"
+            android:label="@string/title_activity_view_request"
+            android:parentActivityName=".Homepage" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.joebruckner.viral.Homepage" />
+        </activity>
+    </application>
+
+</manifest>

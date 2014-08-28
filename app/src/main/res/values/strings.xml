@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Viral</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
+
+    <!-- Login -->
+    <string name="title_activity_login">Login</string>
+    <string name="username">Username</string>
+    <string name="password">Password</string>
+    <string name="login">Login</string>
+    <string name="sign_up">Sign Up</string>
+
+    <!-- SignUp -->
+    <string name="new_username">New Username</string>
+    <string name="new_password">New Password</string>
+    <string name="confirm_password">Confirm Password</string>
+
+    <!-- Homepage -->
+    <string name="recent_pics">Recent Pics</string>
+    <string name="title_activity_sign_up">SignUp</string>
+    <string name="action_logout">Logout</string>
+    <string name="action_new">New</string>
+    <string name="action_add_friend">Add Friend</string>
+    <string name="friend_username_hint">Enter their username</string>
+    <string name="send_request">Send</string>
+    <string name="cancel">Cancel</string>
+
+    <!-- NewPost -->
+    <string name="test">Test</string>
+    <string name="title_activity_new_post">NewPost</string>
+
+    <!-- ViewPost -->
+    <string name="title_activity_view_post">viewPost</string>
+
+    <!-- ViewRequest -->
+    <string name="title_activity_view_request">viewRequest</string>
+    <string name="contact_name">Contact Name</string>
+    <string name="accept">Yes</string>
+    <string name="decline">No</string>
+
+</resources>
