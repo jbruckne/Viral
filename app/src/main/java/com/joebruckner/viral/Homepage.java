@@ -51,6 +51,8 @@ public class Homepage extends Activity {
         getRequests();
     }
 
+    // ---INITIAL SETUP METHODS---
+
     private void getRequests() {
         // Get all the friend requests for the user
         ParseQuery<ParseObject> requestQuery = ParseQuery.getQuery("Request");
@@ -89,7 +91,7 @@ public class Homepage extends Activity {
     private void getPosts() {
         ArrayList<String> contactIds = new ArrayList<String>();
         for(ParseObject contact : contacts) {
-            contactIds.add(contact.getString("id"));
+            contactIds.add(contact.getString("contactId"));
         }
 
         // Get all the posts from the users friends
@@ -145,54 +147,32 @@ public class Homepage extends Activity {
         });
     }
 
-    public void acceptRequest(int pos) {
-        final ParseObject request = items.get(pos);
-        final ParseObject contact = new ParseObject("Contact");
-        contact.put("id", request.getString("idFrom"));
-        contact.put("name", request.getString("nameFrom"));
-        contact.saveInBackground(new SaveCallback() {
-            @Override
-            public void done(ParseException e) {
-                if(e == null) {
-                    Log.v("Parse", "Saved contact object");
-                    ParseUser user = ParseUser.getCurrentUser();
-                    ParseRelation<ParseObject> contactsRelation = user.getRelation("contacts");
-                    contactsRelation.add(contact);
-                    user.saveInBackground(new SaveCallback() {
-                        @Override
-                        public void done(ParseException e) {
-                            if (e == null) {
-                                ParseQuery<ParseUser> query = ParseUser.getQuery();
-                                query.whereEqualTo("objectId", request.getString("idFrom"));
-                                query.findInBackground(new FindCallback<ParseUser>() {
-                                    @Override
-                                    public void done(List<ParseUser> parseUsers, ParseException e) {
-                                        if(e == null) {
-                                            //TODO
-                                        } else {
-                                            Log.e("Parse", e.toString());
-                                        }
-                                    }
-                                });
+    // ---END OF INITIAL SETUP METHODS---
 
-                                Log.v("Parse", "Successfully added new contact");
-                            } else {
-                                Log.e("Parse", e.toString());
-                            }
-                        }
-                    });
+    // Add both user's to each others contacts list
+    public void acceptRequest(int pos) {
+        String requestId = items.get(pos).getObjectId();
+
+        HashMap<String, Object> params = new HashMap<String, Object>();
+        params.put("id", requestId);
+        ParseCloud.callFunctionInBackground("acceptRequest", params, new FunctionCallback<Object>() {
+            @Override
+            public void done(Object o, ParseException e) {
+                if(e == null) {
+                    Log.v("Parse Cloud", o.toString());
                 } else {
-                    Log.e("Parse", e.toString());
+                    Log.e("Parse Cloud", e.toString());
                 }
             }
         });
-
     }
 
+    // Decline the friend request
     public void declineRequest(int pos) {
         //TODO
     }
 
+    // Remove the request from the list of pending requests
     public void removeRequest(int pos) {
         final int position = pos;
         ParseObject request = items.get(position);
@@ -210,6 +190,7 @@ public class Homepage extends Activity {
         });
     }
 
+    // Open the post into full screen
     public void openPost(ParseObject post) {
         ParseFile file = post.getParseFile("Image");
         file.getDataInBackground(new GetDataCallback() {
@@ -226,6 +207,7 @@ public class Homepage extends Activity {
         });
     }
 
+    // Open a dialog to create and send a request
     public void requestDialog() {
 
         // Custom dialog
@@ -258,12 +240,11 @@ public class Homepage extends Activity {
         dialog.show();
     }
 
+    // Save the request
     public void sendRequest() {
-        // Set up the request
-        ParseUser user = ParseUser.getCurrentUser();
+        // create the request
         final ParseObject object = new ParseObject("Request");
-        object.put("idFrom", user.getObjectId());
-        object.put("nameFrom", user.getUsername());
+        object.put("from", ParseUser.getCurrentUser());
 
         // Find the id of the friend the user is requesting
         ParseQuery<ParseUser> friendQuery = ParseUser.getQuery();
@@ -272,7 +253,7 @@ public class Homepage extends Activity {
             @Override
             public void done(List<ParseUser> parseUsers, ParseException e) {
                 if(e == null) {
-                    object.put("idTo", parseUsers.get(0).getObjectId());
+                    object.put("to", parseUsers.get(0).getObjectId());
                     object.saveInBackground(new SaveCallback() {
                         @Override
                         public void done(ParseException e) {
@@ -323,29 +304,15 @@ public class Homepage extends Activity {
     }
 
     public void test() {
-
-        ParseQuery<ParseObject> query = ParseQuery.getQuery("testRequest");
-        query.findInBackground(new FindCallback<ParseObject>() {
+        ParseCloud.callFunctionInBackground("test", new HashMap<String, Object>(), new FunctionCallback<String>() {
             @Override
-            public void done(List<ParseObject> parseObjects, ParseException e) {
+            public void done(String response, ParseException e) {
                 if(e == null) {
-                    String requestId = parseObjects.get(0).getObjectId();
-
-                    HashMap<String, Object> params = new HashMap<String, Object>();
-                    params.put("requestId", requestId);
-                    ParseCloud.callFunctionInBackground("acceptRequest", params, new FunctionCallback<String>() {
-                        @Override
-                        public void done(String result, ParseException e) {
-                            if (e == null) {
-                                Log.v("Parse", result);
-                            } else {
-                                Log.e("Parse", e.toString());
-                            }
-                        }
-                    });
+                    Log.v("Parse Cloud", response);
+                } else {
+                    Log.e("Parse Cloud", e.toString());
                 }
             }
         });
-
     }
 }
