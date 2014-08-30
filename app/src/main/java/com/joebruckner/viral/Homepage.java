@@ -13,7 +13,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 
-import com.parse.DeleteCallback;
 import com.parse.FindCallback;
 import com.parse.FunctionCallback;
 import com.parse.GetDataCallback;
@@ -57,6 +56,7 @@ public class Homepage extends Activity {
         // Get all the friend requests for the user
         ParseQuery<ParseObject> requestQuery = ParseQuery.getQuery("Request");
         requestQuery.whereEqualTo("to", ParseUser.getCurrentUser().getObjectId());
+        requestQuery.include("from");
         requestQuery.findInBackground(new FindCallback<ParseObject>() {
             @Override
             public void done(List<ParseObject> parseObjects, ParseException e) {
@@ -154,7 +154,7 @@ public class Homepage extends Activity {
         String requestId = items.get(pos).getObjectId();
 
         HashMap<String, Object> params = new HashMap<String, Object>();
-        params.put("id", requestId);
+        params.put("requestId", requestId);
         ParseCloud.callFunctionInBackground("acceptRequest", params, new FunctionCallback<Object>() {
             @Override
             public void done(Object o, ParseException e) {
@@ -174,20 +174,9 @@ public class Homepage extends Activity {
 
     // Remove the request from the list of pending requests
     public void removeRequest(int pos) {
-        final int position = pos;
-        ParseObject request = items.get(position);
-        request.deleteInBackground(new DeleteCallback() {
-            @Override
-            public void done(ParseException e) {
-                if(e == null) {
-                    items.remove(position);
-                    adapter.removeItem(position);
-                    Log.v("Parse", "Successfully removed request");
-                } else {
-                    Log.e("Parse", e.toString());
-                }
-            }
-        });
+        Log.d("ArrayList Change", "Item Changing: " + pos + ". Total items: " + items.size());
+        //items.remove(pos);
+        adapter.removeItem(pos);
     }
 
     // Open the post into full screen
@@ -304,15 +293,7 @@ public class Homepage extends Activity {
     }
 
     public void test() {
-        ParseCloud.callFunctionInBackground("test", new HashMap<String, Object>(), new FunctionCallback<String>() {
-            @Override
-            public void done(String response, ParseException e) {
-                if(e == null) {
-                    Log.v("Parse Cloud", response);
-                } else {
-                    Log.e("Parse Cloud", e.toString());
-                }
-            }
-        });
+        ParseUser user = ParseUser.getCurrentUser();
+        Log.v("User", "Logged in as " + user.getUsername());
     }
 }

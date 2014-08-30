@@ -1,6 +1,7 @@
 package com.joebruckner.viral;
 
 import android.app.Activity;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -36,6 +37,7 @@ public class PostsAdapter extends BaseAdapter {
     }
 
     public void removeItem(int pos) {
+        Log.d("Adapter Change", "Item changing: " + pos + ". Total items: " + items.size());
         items.remove(pos);
         notifyDataSetChanged();
     }
@@ -95,7 +97,7 @@ public class PostsAdapter extends BaseAdapter {
         if(holder.isPost()) {
             text = object.getString("Name") + " has a new post";
         } else {
-            text = object.getString("nameFrom") + " wants to be friends";
+            text = object.getParseUser("from").getUsername() + " wants to be friends";
             ButtonInfo bi = new ButtonInfo(position);
             holder.getAccept().setOnClickListener(acceptListener);
             holder.getAccept().setTag(bi);
