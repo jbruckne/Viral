@@ -118,16 +118,14 @@ public class Homepage extends Activity {
             @Override
             public void onClick(View v) {
                 int pos = ((PostsAdapter.ButtonInfo) v.getTag()).pos;
-                acceptRequest(pos);
-                removeRequest(pos);
+                answerRequest(pos, "acceptRequest");
             }
         });
         adapter.setDeclineListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 int pos = ((PostsAdapter.ButtonInfo) v.getTag()).pos;
-                declineRequest(pos);
-                removeRequest(pos);
+                answerRequest(pos, "declineRequest");
             }
         });
         listView = (ListView) findViewById(R.id.recents);
@@ -149,34 +147,25 @@ public class Homepage extends Activity {
 
     // ---END OF INITIAL SETUP METHODS---
 
-    // Add both user's to each others contacts list
-    public void acceptRequest(int pos) {
+    // Add the user's to each others contacts or just delete the request
+    public void answerRequest(final int pos, String function) {
         String requestId = items.get(pos).getObjectId();
 
         HashMap<String, Object> params = new HashMap<String, Object>();
         params.put("requestId", requestId);
-        ParseCloud.callFunctionInBackground("acceptRequest", params, new FunctionCallback<Object>() {
+        ParseCloud.callFunctionInBackground(function, params, new FunctionCallback<Object>() {
             @Override
             public void done(Object o, ParseException e) {
                 if(e == null) {
                     Log.v("Parse Cloud", o.toString());
+
+                    //items.remove(pos);
+                    adapter.removeItem(pos);
                 } else {
                     Log.e("Parse Cloud", e.toString());
                 }
             }
         });
-    }
-
-    // Decline the friend request
-    public void declineRequest(int pos) {
-        //TODO
-    }
-
-    // Remove the request from the list of pending requests
-    public void removeRequest(int pos) {
-        Log.d("ArrayList Change", "Item Changing: " + pos + ". Total items: " + items.size());
-        //items.remove(pos);
-        adapter.removeItem(pos);
     }
 
     // Open the post into full screen
