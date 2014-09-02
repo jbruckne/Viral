@@ -85,9 +85,9 @@ public class NewPost extends Activity {
     public void recordPost() {
         ParseUser user = ParseUser.getCurrentUser();
         ParseObject post = new ParseObject("Post");
-        post.put("User", user.getObjectId());
-        post.put("Name", user.getUsername());
-        post.put("Image", imageFile);
+        post.put("user", user.getObjectId());
+        post.put("name", user.getUsername());
+        post.put("image", imageFile);
         post.saveInBackground(new SaveCallback() {
             @Override
             public void done(ParseException e) {

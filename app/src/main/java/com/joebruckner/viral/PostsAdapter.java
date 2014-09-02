@@ -95,7 +95,7 @@ public class PostsAdapter extends BaseAdapter {
 
         String text;
         if(holder.isPost()) {
-            text = object.getString("Name") + " has a new post";
+            text = object.getString("name") + " has a new post";
         } else {
             text = object.getParseUser("from").getUsername() + " wants to be friends";
             ButtonInfo bi = new ButtonInfo(position);

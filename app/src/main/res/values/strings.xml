@@ -21,6 +21,7 @@
     <string name="recent_pics">Recent Pics</string>
     <string name="title_activity_sign_up">SignUp</string>
     <string name="action_logout">Logout</string>
+    <string name="action_refresh">Refresh</string>
     <string name="action_new">New</string>
     <string name="action_add_friend">Add Friend</string>
     <string name="friend_username_hint">Enter their username</string>

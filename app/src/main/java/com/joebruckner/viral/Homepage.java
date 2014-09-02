@@ -21,7 +21,6 @@ import com.parse.ParseException;
 import com.parse.ParseFile;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
-import com.parse.ParseRelation;
 import com.parse.ParseUser;
 import com.parse.SaveCallback;
 
@@ -31,6 +30,10 @@ import java.util.List;
 
 
 public class Homepage extends Activity {
+
+    private final int CONTACTS = 0;
+    private final int POSTS    = 1;
+    private final int REQUESTS = 2;
 
     private ListView          listView;
     private PostsAdapter      adapter;
@@ -46,65 +49,23 @@ public class Homepage extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_homepage);
 
-        items = new ArrayList<ParseObject>();
-        getRequests();
+        updateItems();
     }
 
-    // ---INITIAL SETUP METHODS---
+    private void updateItems() {
 
-    private void getRequests() {
-        // Get all the friend requests for the user
-        ParseQuery<ParseObject> requestQuery = ParseQuery.getQuery("Request");
-        requestQuery.whereEqualTo("to", ParseUser.getCurrentUser().getObjectId());
-        requestQuery.include("from");
-        requestQuery.findInBackground(new FindCallback<ParseObject>() {
+        ParseCloud.callFunctionInBackground("getItems", new HashMap<String, Object>(), new FunctionCallback<ArrayList<ArrayList<ParseObject>>>() {
             @Override
-            public void done(List<ParseObject> parseObjects, ParseException e) {
+            public void done(ArrayList<ArrayList<ParseObject>> o, ParseException e) {
                 if(e == null) {
-                    items.addAll(parseObjects);
-                    getContacts();
-                } else {
-                    Log.e("Parse", e.toString());
-                }
-            }
-        });
-    }
+                    // Make a new list of the updated items
+                    items = new ArrayList<ParseObject>();
+                    items.addAll(o.get(POSTS));
+                    items.addAll(o.get(REQUESTS));
 
-    private void getContacts() {
-        // Get all of the user's contacts
-        ParseRelation<ParseObject> contactsRelation = ParseUser.getCurrentUser().getRelation("contacts");
-        ParseQuery<ParseObject> contactQuery = contactsRelation.getQuery();
-        contactQuery.findInBackground(new FindCallback<ParseObject>() {
-            @Override
-            public void done(List<ParseObject> parseObjects, ParseException e) {
-                if(e == null) {
-                    contacts = parseObjects;
-                    getPosts();
-                } else {
-                    Log.e("Parse", e.toString());
-                }
-            }
-        });
-        
-    }
-
-    private void getPosts() {
-        ArrayList<String> contactIds = new ArrayList<String>();
-        for(ParseObject contact : contacts) {
-            contactIds.add(contact.getString("contactId"));
-        }
-
-        // Get all the posts from the users friends
-        ParseQuery<ParseObject> postQuery = ParseQuery.getQuery("Post");
-        postQuery.whereContainedIn("User", contactIds);
-        postQuery.findInBackground(new FindCallback<ParseObject>() {
-            @Override
-            public void done(List<ParseObject> parseObjects, ParseException e) {
-                if (e == null) {
-                    items.addAll(parseObjects);
                     setListView();
                 } else {
-                    Log.e("Parse", e.toString());
+                    Log.e("Parse getItems", e.toString());
                 }
             }
         });
@@ -112,7 +73,7 @@ public class Homepage extends Activity {
 
     private void setListView() {
 
-        // Set adapter to the List
+        // Set adapters to the List
         adapter = new PostsAdapter(this, items);
         adapter.setAcceptListener(new View.OnClickListener() {
             @Override
@@ -128,6 +89,7 @@ public class Homepage extends Activity {
                 answerRequest(pos, "declineRequest");
             }
         });
+
         listView = (ListView) findViewById(R.id.recents);
         listView.setAdapter(adapter);
 
@@ -145,10 +107,8 @@ public class Homepage extends Activity {
         });
     }
 
-    // ---END OF INITIAL SETUP METHODS---
-
     // Add the user's to each others contacts or just delete the request
-    public void answerRequest(final int pos, String function) {
+    public void answerRequest(final int pos, final String function) {
         String requestId = items.get(pos).getObjectId();
 
         HashMap<String, Object> params = new HashMap<String, Object>();
@@ -157,12 +117,12 @@ public class Homepage extends Activity {
             @Override
             public void done(Object o, ParseException e) {
                 if(e == null) {
-                    Log.v("Parse Cloud", o.toString());
+                    Log.v("Parse " + function, o.toString());
 
                     //items.remove(pos);
                     adapter.removeItem(pos);
                 } else {
-                    Log.e("Parse Cloud", e.toString());
+                    Log.e("Parse " + function, e.toString());
                 }
             }
         });
@@ -170,7 +130,7 @@ public class Homepage extends Activity {
 
     // Open the post into full screen
     public void openPost(ParseObject post) {
-        ParseFile file = post.getParseFile("Image");
+        ParseFile file = post.getParseFile("image");
         file.getDataInBackground(new GetDataCallback() {
             @Override
             public void done(byte[] bytes, ParseException e) {
@@ -275,6 +235,8 @@ public class Homepage extends Activity {
             Intent intent = new Intent(this, Login.class);
             finish();
             startActivity(intent);
+        } else if(id == R.id.action_refresh) {
+
         } else if(id == R.id.action_test) {
             test();
         }
@@ -284,5 +246,29 @@ public class Homepage extends Activity {
     public void test() {
         ParseUser user = ParseUser.getCurrentUser();
         Log.v("User", "Logged in as " + user.getUsername());
+
+        ParseCloud.callFunctionInBackground("getItems", new HashMap<String, Object>(), new FunctionCallback<ArrayList<ArrayList<ParseObject>>>() {
+            @Override
+            public void done(ArrayList<ArrayList<ParseObject>> response, ParseException e) {
+                if(e == null) {
+                    ArrayList<ParseObject> contacts = response.get(0);
+                    ArrayList<ParseObject> posts    = response.get(1);
+                    ArrayList<ParseObject> requests = response.get(2);
+
+                    for(ParseObject contact : contacts) {
+                        Log.v(contact.getClassName(), contact.getObjectId());
+                    }
+                    for(ParseObject post : posts) {
+                        Log.v(post.getClassName(), post.getObjectId());
+                    }
+                    for(ParseObject request : requests) {
+                        Log.v(request.getClassName(), request.getObjectId());
+                    }
+
+                } else {
+                    Log.e("Parse Test", e.toString());
+                }
+            }
+        });
     }
 }
