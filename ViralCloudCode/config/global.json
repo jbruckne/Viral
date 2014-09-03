@@ -1,0 +1,14 @@
+{
+    "applications": {
+        "Viral": {
+            "applicationId": "1Q7rGlnYLQxmseVTRrwN28lhrJRtGZJQWVzZ66hF", 
+            "masterKey": "AB82vQVTcvMGvw01tWGxjjHJEqlzahZZw7BPudFH"
+        }, 
+        "_default": {
+            "link": "Viral"
+        }
+    }, 
+    "global": {
+        "parseVersion": "1.2.19"
+    }
+}
