@@ -12,17 +12,15 @@ import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.Toast;
 
-import com.parse.FindCallback;
 import com.parse.FunctionCallback;
 import com.parse.GetDataCallback;
 import com.parse.ParseCloud;
 import com.parse.ParseException;
 import com.parse.ParseFile;
 import com.parse.ParseObject;
-import com.parse.ParseQuery;
 import com.parse.ParseUser;
-import com.parse.SaveCallback;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -57,12 +55,11 @@ public class Homepage extends Activity {
         ParseCloud.callFunctionInBackground("getItems", new HashMap<String, Object>(), new FunctionCallback<ArrayList<ArrayList<ParseObject>>>() {
             @Override
             public void done(ArrayList<ArrayList<ParseObject>> o, ParseException e) {
-                if(e == null) {
+                if (e == null) {
                     // Make a new list of the updated items
                     items = new ArrayList<ParseObject>();
                     items.addAll(o.get(POSTS));
                     items.addAll(o.get(REQUESTS));
-
                     setListView();
                 } else {
                     Log.e("Parse getItems", e.toString());
@@ -116,7 +113,7 @@ public class Homepage extends Activity {
         ParseCloud.callFunctionInBackground(function, params, new FunctionCallback<Object>() {
             @Override
             public void done(Object o, ParseException e) {
-                if(e == null) {
+                if (e == null) {
                     Log.v("Parse " + function, o.toString());
 
                     //items.remove(pos);
@@ -162,7 +159,18 @@ public class Homepage extends Activity {
         sendRequest.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                sendRequest();
+                HashMap<String, Object> params = new HashMap<String, Object>();
+                params.put("to", friendUsername.getText().toString());
+                ParseCloud.callFunctionInBackground("sendRequest", params, new FunctionCallback<Object>() {
+                    @Override
+                    public void done(Object o, ParseException e) {
+                        if(e == null) {
+                            Toast.makeText(getApplicationContext(), "Request Sent", Toast.LENGTH_SHORT).show();
+                        } else {
+                            Log.e("Parse sendRequest", e.toString());
+                        }
+                    }
+                });
                 dialog.dismiss();
             }
         });
@@ -178,37 +186,6 @@ public class Homepage extends Activity {
         dialog.show();
     }
 
-    // Save the request
-    public void sendRequest() {
-        // create the request
-        final ParseObject object = new ParseObject("Request");
-        object.put("from", ParseUser.getCurrentUser());
-
-        // Find the id of the friend the user is requesting
-        ParseQuery<ParseUser> friendQuery = ParseUser.getQuery();
-        friendQuery.whereEqualTo("username", friendUsername.getText().toString());
-        friendQuery.findInBackground(new FindCallback<ParseUser>() {
-            @Override
-            public void done(List<ParseUser> parseUsers, ParseException e) {
-                if(e == null) {
-                    object.put("to", parseUsers.get(0).getObjectId());
-                    object.saveInBackground(new SaveCallback() {
-                        @Override
-                        public void done(ParseException e) {
-                            if(e == null) {
-                                Log.d("Parse", object.toString());
-                            } else {
-                                Log.e("Parse", e.toString());
-                            }
-                        }
-                    });
-                } else {
-                    Log.e("Parse", e.toString());
-                }
-            }
-        });
-    }
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -222,23 +199,29 @@ public class Homepage extends Activity {
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-        if (id == R.id.action_settings) {
-            return true;
-        } else if(id == R.id.action_new) {
-            Intent intent = new Intent(this, NewPost.class);
-            startActivity(intent);
-        } else if(id == R.id.action_add_friend) {
-            requestDialog();
-        } else if(id == R.id.action_logout) {
-            // Log the user out
-            ParseUser.logOut();
-            Intent intent = new Intent(this, Login.class);
-            finish();
-            startActivity(intent);
-        } else if(id == R.id.action_refresh) {
-
-        } else if(id == R.id.action_test) {
-            test();
+        switch (id) {
+            case R.id.action_settings:
+                return true;
+            case R.id.action_new:
+                Intent newIntent = new Intent(this, NewPost.class);
+                startActivity(newIntent);
+                break;
+            case R.id.action_add_friend:
+                requestDialog();
+                break;
+            case R.id.action_logout:
+                ParseUser.logOut();
+                Intent intent = new Intent(this, Login.class);
+                finish();
+                startActivity(intent);
+                break;
+            case R.id.action_refresh:
+                break;
+            case R.id.action_test:
+                test();
+                break;
+            default:
+                break;
         }
         return super.onOptionsItemSelected(item);
     }
@@ -246,29 +229,5 @@ public class Homepage extends Activity {
     public void test() {
         ParseUser user = ParseUser.getCurrentUser();
         Log.v("User", "Logged in as " + user.getUsername());
-
-        ParseCloud.callFunctionInBackground("getItems", new HashMap<String, Object>(), new FunctionCallback<ArrayList<ArrayList<ParseObject>>>() {
-            @Override
-            public void done(ArrayList<ArrayList<ParseObject>> response, ParseException e) {
-                if(e == null) {
-                    ArrayList<ParseObject> contacts = response.get(0);
-                    ArrayList<ParseObject> posts    = response.get(1);
-                    ArrayList<ParseObject> requests = response.get(2);
-
-                    for(ParseObject contact : contacts) {
-                        Log.v(contact.getClassName(), contact.getObjectId());
-                    }
-                    for(ParseObject post : posts) {
-                        Log.v(post.getClassName(), post.getObjectId());
-                    }
-                    for(ParseObject request : requests) {
-                        Log.v(request.getClassName(), request.getObjectId());
-                    }
-
-                } else {
-                    Log.e("Parse Test", e.toString());
-                }
-            }
-        });
     }
 }
