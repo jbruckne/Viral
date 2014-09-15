@@ -229,8 +229,5 @@ public class Homepage extends Activity {
     public void test() {
         ParseUser user = ParseUser.getCurrentUser();
         Log.v("User", "Logged in as " + user.getUsername());
-
-        ServerTask task = new ServerTask();
-        task.execute();
     }
 }

@@ -1,6 +1,5 @@
 package com.joebruckner.viral;
 
-import android.os.AsyncTask;
 import android.util.Log;
 
 import org.apache.http.HttpEntity;
@@ -10,41 +9,21 @@ import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.ByteArrayBuffer;
 
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by joebruckner on 9/5/14.
+ * Created by joebruckner on 9/15/14.
  */
-public class ServerTask extends AsyncTask {
+public class Server {
 
-    final String url = "http://web.ics.purdue.edu/~jbruckne/";
-
-    public ServerTask() {
-
-    }
-
-    @Override
-    protected Object doInBackground(Object[] params) {
-
-        List<NameValuePair> args = new ArrayList<NameValuePair>();
-        args.add(new BasicNameValuePair("user", "joe"));
-
-        String response = makeRequest("sign_in", args);
-
-        Log.d("Response", response);
-
-        return null;
-    }
-
-    private String makeRequest(String request, List<NameValuePair> args) {
+    public static String makeRequest(String request, List<NameValuePair> args) {
+        final String url = "http://web.ics.purdue.edu/~jbruckne/";
 
         try {
             String requestUrl = url + request + ".php";
@@ -66,6 +45,7 @@ public class ServerTask extends AsyncTask {
             }
 
             String jsonText = new String(byteBuffer.toByteArray());
+            Log.d("JsonText", jsonText);
             return jsonText;
 
         } catch (UnsupportedEncodingException e) {
@@ -77,25 +57,5 @@ public class ServerTask extends AsyncTask {
         }
 
         return null;
-    }
-
-    @Override
-    protected void onPreExecute() {
-        super.onPreExecute();
-    }
-
-    @Override
-    protected void onPostExecute(Object o) {
-        super.onPostExecute(o);
-    }
-
-    @Override
-    protected void onProgressUpdate(Object[] values) {
-        super.onProgressUpdate(values);
-    }
-
-    @Override
-    protected void onCancelled(Object o) {
-        super.onCancelled(o);
     }
 }

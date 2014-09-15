@@ -60,6 +60,10 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.joebruckner.viral.Homepage" />
         </activity>
+        <activity
+            android:name=".TestLogin"
+            android:label="@string/title_activity_test_login" >
+        </activity>
     </application>
 
 </manifest>

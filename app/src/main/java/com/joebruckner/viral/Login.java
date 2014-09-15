@@ -32,7 +32,7 @@ public class Login extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        intentLogin = new Intent(this, Homepage.class);
+        intentLogin = new Intent(this, TestLogin.class);
         Parse.initialize(this, PARSE_APP_ID, PARSE_CLIENT_KEY);
 
         // Check if user is already logged in

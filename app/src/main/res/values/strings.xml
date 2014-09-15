@@ -40,5 +40,6 @@
     <string name="contact_name">Contact Name</string>
     <string name="accept">Yes</string>
     <string name="decline">No</string>
+    <string name="title_activity_test_login">TestLogin</string>
 
 </resources>
