@@ -17,26 +17,28 @@ import java.util.List;
 /**
  * Created by joebruckner on 9/15/14.
  */
-public class SignUpRequest extends AsyncTask<String, Integer, String> {
+public class LogInRequest extends AsyncTask<String, Integer, String> {
     Context context;
 
-    public SignUpRequest(Context context) {
+    public LogInRequest(Context context) {
         this.context = context;
     }
 
     @Override
     protected String doInBackground(String... params) {
+        // Get login info
         String username = params[0];
         String password = params[1];
 
+        // Set login arguments
         List<NameValuePair> args = new ArrayList<NameValuePair>();
         args.add(new BasicNameValuePair("username", username));
         args.add(new BasicNameValuePair("password", password));
 
-        String response = Server.makeRequest("sign_up", args);
+        // Send the request to the server
+        String response = Server.makeRequest("log_in", args);
 
         return response;
-
     }
 
     @Override
