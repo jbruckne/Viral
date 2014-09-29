@@ -23,19 +23,14 @@
             android:label="@string/app_name" >
         </activity>
         <activity
-            android:name=".Login"
+            android:name=".startup.Login"
             android:label="@string/title_activity_login" >
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
         </activity>
         <activity
-            android:name=".SignUp"
+            android:name=".startup.SignUp"
             android:label="@string/title_activity_sign_up"
             android:noHistory="true"
-            android:parentActivityName=".Login" >
+            android:parentActivityName=".startup.Login" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.joebruckner.viral.Login" />
@@ -61,8 +56,13 @@
                 android:value="com.joebruckner.viral.Homepage" />
         </activity>
         <activity
-            android:name=".TestLogin"
-            android:label="@string/title_activity_test_login" >
+            android:name=".startup.SplashScreen"
+            android:label="@string/title_activity_splash_screen" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
         </activity>
     </application>
 

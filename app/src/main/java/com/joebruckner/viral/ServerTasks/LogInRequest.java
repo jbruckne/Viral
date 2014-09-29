@@ -1,6 +1,7 @@
-package com.joebruckner.viral;
+package com.joebruckner.viral.serverTasks;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.preference.PreferenceManager;
@@ -17,26 +18,27 @@ import java.util.List;
 /**
  * Created by joebruckner on 9/15/14.
  */
-public class SignUpRequest extends AsyncTask<String, Integer, String> {
+public class LogInRequest extends AsyncTask<String, Integer, String> {
     Context context;
+    Class className;
 
-    public SignUpRequest(Context context) {
+    public LogInRequest(Context context, Class className) {
         this.context = context;
+        this.className = className;
     }
 
     @Override
     protected String doInBackground(String... params) {
+        // Get login info
         String username = params[0];
         String password = params[1];
 
+        // Set login arguments
         List<NameValuePair> args = new ArrayList<NameValuePair>();
         args.add(new BasicNameValuePair("username", username));
         args.add(new BasicNameValuePair("password", password));
 
-        String response = Server.makeRequest("sign_up", args);
-
-        return response;
-
+        return Server.makeRequest("log_in", args);
     }
 
     @Override
@@ -52,6 +54,10 @@ public class SignUpRequest extends AsyncTask<String, Integer, String> {
 
             if(e.equals("null")) {
                 saveSession(response);
+                // Continue to the app
+                Intent intent = new Intent(context, className);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                context.startActivity(intent);
             } else {
                 Log.e("Response Error", e);
             }
@@ -67,7 +73,7 @@ public class SignUpRequest extends AsyncTask<String, Integer, String> {
             editor.putString("token", response.getString("token"));
             editor.putString("tokenId", response.getString("tokenId"));
             editor.putString("timestamp", response.getString("timestamp"));
-            editor.putString("userId", response.getString("userID"));
+            editor.putString("userId", response.getString("userId"));
             editor.commit();
         } catch (JSONException e) {
             Log.e("JSONException", e.toString());

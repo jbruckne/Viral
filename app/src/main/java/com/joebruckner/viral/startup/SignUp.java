@@ -1,9 +1,8 @@
-package com.joebruckner.viral;
+package com.joebruckner.viral.startup;
 
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -11,18 +10,19 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.parse.ParseException;
-import com.parse.ParseUser;
-import com.parse.SignUpCallback;
+import com.joebruckner.viral.Homepage;
+import com.joebruckner.viral.R;
+import com.joebruckner.viral.serverTasks.SignUpRequest;
 
 public class SignUp extends Activity {
 
     private EditText newUsername;
     private EditText newPassword;
-    private EditText confirm;
+    private EditText confirmPass;
     private Button   signUp;
-
     private Intent   intent;
+
+    final int MIN = 6;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,7 +32,7 @@ public class SignUp extends Activity {
         // Set views
         newUsername = (EditText) findViewById(R.id.new_username);
         newPassword = (EditText) findViewById(R.id.new_password);
-        confirm     = (EditText) findViewById(R.id.confirm_password);
+        confirmPass = (EditText) findViewById(R.id.confirm_password);
         signUp      = (Button)   findViewById(R.id.sign_up);
 
         // Sign up the user and log them in
@@ -41,31 +41,47 @@ public class SignUp extends Activity {
             public void onClick(View v) {
                 String username = newUsername.getText().toString();
                 String password = newPassword.getText().toString();
+                String confirm  = confirmPass.getText().toString();
 
-                if(password.equals(confirm.getText().toString())) {
-                    ParseUser newUser = new ParseUser();
-                    newUser.setUsername(username);
-                    newUser.setPassword(password);
-
-                    newUser.signUpInBackground(new SignUpCallback() {
-                        @Override
-                        public void done(ParseException e) {
-                            if(e == null) {
-                                intent = new Intent(getApplicationContext(), Homepage.class);
-                                startActivity(intent);
-                            } else {
-                                Log.e("Parse", e.toString());
-                            }
-                        }
-                    });
-                } else {
-                    Toast.makeText(getApplicationContext(),
-                            "passwords must match", Toast.LENGTH_SHORT).show();
+                if(username.isEmpty() || password.isEmpty() || confirm.isEmpty()) {
+                    showError(0);
+                    return;
+                } else if(username.length() < MIN || password.length() < MIN) {
+                    showError(1);
+                    return;
+                } else if(!password.equals(confirm)) {
+                    showError(2);
+                    return;
                 }
+
+                SignUpRequest request = new SignUpRequest(getApplicationContext(), Homepage.class);
+                request.execute(username, password);
             }
         });
     }
 
+    /*
+     * Display login/signup errors
+     * 0: Didn't fill in all prompts
+     * 1: New username or password is too small
+     */
+    public void showError(int e) {
+        String errorMessage;
+        switch(e) {
+            case 0:
+                errorMessage = "Must fill in all prompts.";
+                break;
+            case 1:
+                errorMessage = "Username/Password must be at least 6 characters long";
+                break;
+            case 2:
+                errorMessage = "Passwords don't match";
+            default:
+                errorMessage = "Error";
+        }
+
+        Toast.makeText(getApplicationContext(), errorMessage, Toast.LENGTH_LONG).show();
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

@@ -41,5 +41,7 @@
     <string name="accept">Yes</string>
     <string name="decline">No</string>
     <string name="title_activity_test_login">TestLogin</string>
+    <string name="title_activity_test_page">testPage</string>
+    <string name="title_activity_splash_screen">SplashScreen</string>
 
 </resources>

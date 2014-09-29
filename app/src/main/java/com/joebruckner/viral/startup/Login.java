@@ -1,4 +1,4 @@
-package com.joebruckner.viral;
+package com.joebruckner.viral.startup;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -10,16 +10,11 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
-import com.parse.LogInCallback;
-import com.parse.Parse;
-import com.parse.ParseException;
-import com.parse.ParseUser;
+import com.joebruckner.viral.Homepage;
+import com.joebruckner.viral.R;
+import com.joebruckner.viral.serverTasks.LogInRequest;
 
 public class Login extends Activity {
-
-    // Parse API Keys
-    private final String PARSE_APP_ID     = "1Q7rGlnYLQxmseVTRrwN28lhrJRtGZJQWVzZ66hF";
-    private final String PARSE_CLIENT_KEY = "fBiPT1a0MZ5zY8BkqLjuOhacMirqtlQR9qck7tAO";
 
     private EditText usernameText;
     private EditText passwordText;
@@ -32,17 +27,6 @@ public class Login extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        intentLogin = new Intent(this, TestLogin.class);
-        Parse.initialize(this, PARSE_APP_ID, PARSE_CLIENT_KEY);
-
-        // Check if user is already logged in
-        ParseUser currentUser = ParseUser.getCurrentUser();
-        if(currentUser != null) {
-            Log.v("Parse", "User already logged in");
-            finish();
-            startActivity(intentLogin);
-        }
-
         setContentView(R.layout.activity_login);
 
         // Set Views
@@ -51,7 +35,7 @@ public class Login extends Activity {
         loginButton  = (Button)   findViewById(R.id.login);
         signUpButton = (Button)   findViewById(R.id.start_sign_up);
 
-        // Login user through Parse
+        // Login user
         loginButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -60,17 +44,8 @@ public class Login extends Activity {
                 Log.v("username", username);
                 Log.v("password", password);
 
-                ParseUser.logInInBackground(username, password, new LogInCallback() {
-                    @Override
-                    public void done(ParseUser user, ParseException e) {
-                        if(e == null) {
-                            finish();
-                            startActivity(intentLogin);
-                        } else {
-                            Log.e("Parse", e.toString());
-                        }
-                    }
-                });
+                LogInRequest request = new LogInRequest(getApplicationContext(), Homepage.class);
+                request.execute(username, password);
             }
         });
 
