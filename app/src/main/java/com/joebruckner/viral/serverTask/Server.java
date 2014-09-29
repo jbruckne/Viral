@@ -1,4 +1,4 @@
-package com.joebruckner.viral.serverTasks;
+package com.joebruckner.viral.serverTask;
 
 import android.util.Log;
 

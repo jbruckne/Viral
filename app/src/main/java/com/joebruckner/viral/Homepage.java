@@ -10,19 +10,14 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 
-import com.joebruckner.viral.Authentication.Login;
+import com.joebruckner.viral.object.User;
 import com.joebruckner.viral.startup.Login;
-import com.parse.ParseObject;
-
-import java.util.List;
 
 
 public class Homepage extends Activity {
 
     private ListView          listView;
     private PostsAdapter      adapter;
-    private List<ParseObject> items;
-    private List<ParseObject> contacts;
     private Dialog            dialog;
     private EditText          friendUsername;
     private Button            sendRequest;
@@ -37,11 +32,9 @@ public class Homepage extends Activity {
 
     private void updateItems() {
 
-
     }
 
     private void setListView() {
-
 
     }
 
@@ -51,7 +44,7 @@ public class Homepage extends Activity {
     }
 
     // Open the post into full screen
-    public void openPost(ParseObject post) {
+    public void openPost() {
 
     }
 
@@ -85,9 +78,8 @@ public class Homepage extends Activity {
                 requestDialog();
                 break;
             case R.id.action_logout:
-                Intent intent = new Intent(this, Login.class);
-                finish();
-                startActivity(intent);
+                User currentUser = new User(this);
+                currentUser.logout(Login.class);
                 break;
             case R.id.action_refresh:
                 break;

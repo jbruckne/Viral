@@ -12,7 +12,7 @@ import android.widget.Toast;
 
 import com.joebruckner.viral.Homepage;
 import com.joebruckner.viral.R;
-import com.joebruckner.viral.serverTasks.SignUpRequest;
+import com.joebruckner.viral.serverTask.SignUpRequest;
 
 public class SignUp extends Activity {
 

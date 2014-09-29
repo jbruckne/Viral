@@ -12,7 +12,7 @@ import android.widget.EditText;
 
 import com.joebruckner.viral.Homepage;
 import com.joebruckner.viral.R;
-import com.joebruckner.viral.serverTasks.LogInRequest;
+import com.joebruckner.viral.serverTask.LogInRequest;
 
 public class Login extends Activity {
 

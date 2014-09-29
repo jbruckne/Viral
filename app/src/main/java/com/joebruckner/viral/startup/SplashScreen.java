@@ -1,13 +1,15 @@
 package com.joebruckner.viral.startup;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 
 import com.joebruckner.viral.Homepage;
 import com.joebruckner.viral.R;
-import com.joebruckner.viral.serverTasks.StartSessionRequest;
+import com.joebruckner.viral.object.User;
+import com.joebruckner.viral.serverTask.StartSessionRequest;
 
 
 public class SplashScreen extends Activity {
@@ -19,8 +21,16 @@ public class SplashScreen extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash_screen);
 
-        StartSessionRequest request = new StartSessionRequest(this, Homepage.class);
-        request.execute();
+        User currentUser = new User(this);
+        if(currentUser.getUserId() != null) {
+            StartSessionRequest request = new StartSessionRequest(this, Homepage.class);
+            request.execute();
+        } else {
+            Intent loginIntent = new Intent(this, Login.class);
+            startActivity(loginIntent);
+        }
+
+
     }
 
     @Override
